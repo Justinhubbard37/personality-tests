@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Personality Profile</title>
+<style>
+:root{
+  color-scheme:dark;
+  --black:#000000;
+  --graphite:#363543;
+  --cloudy:#5994d7;
+  --azure:#e1f5f9;
+  --pearl:#a1a1aa;
+  --mint:#20bd90;
+  --gunpowder:#4a4958;
+  --steel:#1f1e2a;
+  --amber:#fa3205;
+
+  --bg:var(--black);
+  --card:var(--steel);
+  --text:var(--azure);
+  --muted:var(--pearl);
+  --line:var(--gunpowder);
+  --accent:var(--mint);
+  --section:var(--cloudy);
+  --surface:var(--graphite);
+  --soft:#292837;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;background:var(--bg)}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.app{max-width:920px;margin:0 auto;padding:28px 20px 50px}
+header{margin-bottom:18px}
+h1{font-size:28px;margin:0 0 6px;color:var(--text)}
+.subtitle{color:var(--muted);font-size:14px}
+
+.tabs{display:flex;gap:8px;overflow:auto;padding:6px 0 18px}
+button{font:inherit;color:var(--text);appearance:none;-webkit-appearance:none}
+.tab{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  padding:11px 16px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .16s,border-color .16s,color .16s,transform .16s;
+}
+.tab:hover{border-color:var(--cloudy);background:#403f50}
+.tab.active{
+  background:var(--mint);
+  color:var(--black);
+  border-color:var(--mint);
+}
+.tab:focus-visible,.option:focus-visible,.btn:focus-visible{
+  outline:3px solid var(--cloudy);
+  outline-offset:2px;
+}
+
+.panel{display:none}.panel.active{display:block}
+.test-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
+.test-title{font-size:20px;font-weight:800;color:var(--cloudy)}
+.test-note{color:var(--muted);font-size:13px;margin-top:4px;max-width:680px}
+
+.progress{
+  height:8px;
+  background:var(--steel);
+  border:1px solid var(--line);
+  border-radius:999px;
+  overflow:hidden;
+  margin:12px 0 18px;
+}
+.progress>span{display:block;height:100%;background:var(--mint);width:0}
+
+.card{
+  background:var(--card);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 12px 34px rgba(0,0,0,.34);
+}
+.card-top{display:flex;justify-content:flex-end;margin-bottom:20px}
+.counter{font-weight:800;color:var(--cloudy);font-size:14px}
+.question{font-size:24px;line-height:1.35;font-weight:750;margin:0 0 26px;color:var(--text)}
+
+.options{display:grid;gap:10px}
+.option{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:12px;
+  padding:13px 14px;
+  cursor:pointer;
+  text-align:left;
+  font-size:15px;
+  transition:background .16s,border-color .16s,color .16s;
+}
+.option:hover{
+  border-color:var(--cloudy);
+  background:#403f50;
+  color:var(--azure);
+}
+.option.selected{
+  border-color:var(--mint);
+  background:var(--soft);
+  color:var(--azure);
+}
+.dot{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid var(--pearl);
+  display:inline-block;
+  flex:0 0 auto;
+  background:transparent;
+}
+.selected .dot{border:6px solid var(--mint);background:var(--black)}
+
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+.btn{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .16s,border-color .16s,color .16s;
+}
+.btn:hover:not(:disabled){border-color:var(--cloudy);background:#403f50}
+.btn.primary{
+  background:var(--mint);
+  color:var(--black);
+  border-color:var(--mint);
+}
+.btn.primary:hover:not(:disabled){background:#27c99b;border-color:#27c99b;color:var(--black)}
+.btn:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+  color:var(--pearl);
+  background:var(--steel);
+  border-color:var(--line);
+}
+
+.results{display:none}.results.show{display:block}
+.result-title{font-size:24px;font-weight:850;margin-bottom:4px;color:var(--text)}
+.result-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.score-card{
+  border:1px solid var(--line);
+  background:var(--steel);
+  color:var(--text);
+  border-radius:14px;
+  padding:16px;
+}
+.score-row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.score-name{font-weight:800;color:var(--cloudy)}
+.score-val{font-weight:850;color:var(--azure)}
+.bar{height:7px;background:var(--graphite);border-radius:999px;overflow:hidden;margin:10px 0}
+.bar span{display:block;height:100%;background:var(--mint)}
+.band{font-size:12px;color:var(--muted)}
+.facets{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);display:grid;gap:7px}
+.facet{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.facet strong{color:var(--azure)}
+.top3{display:grid;gap:12px;margin:18px 0}
+.top-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:var(--steel);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+}
+.rank{font-weight:900;font-size:13px;color:var(--cloudy)}
+.top-name{font-size:20px;font-weight:850;color:var(--azure)}
+.blend{font-weight:850;color:var(--mint)}
+.footer-note{margin-top:18px;color:var(--muted);font-size:12px;line-height:1.5}
+.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+
+@media(max-width:640px){
+  .app{padding:18px 12px 36px}
+  .card{padding:20px 16px}
+  .question{font-size:21px}
+  .test-head{display:block}
+  .tab{padding:10px 13px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>Personality Profile</h1><div class="subtitle">Three separate assessments. Progress is saved locally in this browser.</div></header>
+<div class="tabs" role="tablist">
+<button class="tab active" data-tab="big5">Big Five</button>
+<button class="tab" data-tab="hexaco">HEXACO</button>
+<button class="tab" data-tab="archetypes">Archetypes</button>
+</div>
+<div id="panels"></div>
+</div>
+<script>
+const DATA = {"big5": [{"text": "Worry about things.", "domain": "Neuroticism", "facet": "Anxiety", "key": 1}, {"text": "Get stressed out easily.", "domain": "Neuroticism", "facet": "Anxiety", "key": 1}, {"text": "Get angry easily.", "domain": "Neuroticism", "facet": "Anger", "key": 1}, {"text": "Lose my temper.", "domain": "Neuroticism", "facet": "Anger", "key": 1}, {"text": "Often feel blue.", "domain": "Neuroticism", "facet": "Depression", "key": 1}, {"text": "Dislike myself.", "domain": "Neuroticism", "facet": "Depression", "key": 1}, {"text": "Find it difficult to approach others.", "domain": "Neuroticism", "facet": "Self-Consciousness", "key": 1}, {"text": "Am easily intimidated.", "domain": "Neuroticism", "facet": "Self-Consciousness", "key": 1}, {"text": "Rarely overindulge.", "domain": "Neuroticism", "facet": "Immoderation", "key": -1}, {"text": "Am able to control my cravings.", "domain": "Neuroticism", "facet": "Immoderation", "key": -1}, {"text": "Remain calm under pressure.", "domain": "Neuroticism", "facet": "Vulnerability", "key": -1}, {"text": "Am calm even in tense situations.", "domain": "Neuroticism", "facet": "Vulnerability", "key": -1}, {"text": "Make friends easily.", "domain": "Extraversion", "facet": "Friendliness", "key": 1}, {"text": "Act comfortably with others.", "domain": "Extraversion", "facet": "Friendliness", "key": 1}, {"text": "Love large parties.", "domain": "Extraversion", "facet": "Gregariousness", "key": 1}, {"text": "Avoid crowds.", "domain": "Extraversion", "facet": "Gregariousness", "key": -1}, {"text": "Take charge.", "domain": "Extraversion", "facet": "Assertiveness", "key": 1}, {"text": "Try to lead others.", "domain": "Extraversion", "facet": "Assertiveness", "key": 1}, {"text": "Am always busy.", "domain": "Extraversion", "facet": "Activity Level", "key": 1}, {"text": "Am always on the go.", "domain": "Extraversion", "facet": "Activity Level", "key": 1}, {"text": "Love excitement.", "domain": "Extraversion", "facet": "Excitement-Seeking", "key": 1}, {"text": "Seek adventure.", "domain": "Extraversion", "facet": "Excitement-Seeking", "key": 1}, {"text": "Have a lot of fun.", "domain": "Extraversion", "facet": "Cheerfulness", "key": 1}, {"text": "Love life.", "domain": "Extraversion", "facet": "Cheerfulness", "key": 1}, {"text": "Have a vivid imagination.", "domain": "Openness", "facet": "Imagination", "key": 1}, {"text": "Love to daydream.", "domain": "Openness", "facet": "Imagination", "key": 1}, {"text": "Believe in the importance of art.", "domain": "Openness", "facet": "Artistic Interests", "key": 1}, {"text": "Do not like art.", "domain": "Openness", "facet": "Artistic Interests", "key": -1}, {"text": "Experience my emotions intensely.", "domain": "Openness", "facet": "Emotionality", "key": 1}, {"text": "Am not easily affected by my emotions.", "domain": "Openness", "facet": "Emotionality", "key": -1}, {"text": "Prefer to stick with things that I know.", "domain": "Openness", "facet": "Adventurousness", "key": -1}, {"text": "Don’t like the idea of change.", "domain": "Openness", "facet": "Adventurousness", "key": -1}, {"text": "Avoid philosophical discussions.", "domain": "Openness", "facet": "Intellect", "key": -1}, {"text": "Am not interested in theoretical discussions.", "domain": "Openness", "facet": "Intellect", "key": -1}, {"text": "Tend to vote for liberal political candidates.", "domain": "Openness", "facet": "Liberalism", "key": 1}, {"text": "Believe in one true religion.", "domain": "Openness", "facet": "Liberalism", "key": -1}, {"text": "Trust others.", "domain": "Agreeableness", "facet": "Trust", "key": 1}, {"text": "Believe that others have good intentions.", "domain": "Agreeableness", "facet": "Trust", "key": 1}, {"text": "Cheat to get ahead.", "domain": "Agreeableness", "facet": "Morality", "key": -1}, {"text": "Take advantage of others.", "domain": "Agreeableness", "facet": "Morality", "key": -1}, {"text": "Love to help others.", "domain": "Agreeableness", "facet": "Altruism", "key": 1}, {"text": "Am concerned about others.", "domain": "Agreeableness", "facet": "Altruism", "key": 1}, {"text": "Insult people.", "domain": "Agreeableness", "facet": "Cooperation", "key": -1}, {"text": "Get back at others.", "domain": "Agreeableness", "facet": "Cooperation", "key": -1}, {"text": "Believe that I am better than others.", "domain": "Agreeableness", "facet": "Modesty", "key": -1}, {"text": "Think highly of myself.", "domain": "Agreeableness", "facet": "Modesty", "key": -1}, {"text": "Sympathize with the homeless.", "domain": "Agreeableness", "facet": "Sympathy", "key": 1}, {"text": "Feel sympathy for those who are worse off than myself.", "domain": "Agreeableness", "facet": "Sympathy", "key": 1}, {"text": "Handle tasks smoothly.", "domain": "Conscientiousness", "facet": "Self-Efficacy", "key": 1}, {"text": "Know how to get things done.", "domain": "Conscientiousness", "facet": "Self-Efficacy", "key": 1}, {"text": "Like order.", "domain": "Conscientiousness", "facet": "Orderliness", "key": 1}, {"text": "Leave a mess in my room.", "domain": "Conscientiousness", "facet": "Orderliness", "key": -1}, {"text": "Tell the truth.", "domain": "Conscientiousness", "facet": "Dutifulness", "key": 1}, {"text": "Break my promises.", "domain": "Conscientiousness", "facet": "Dutifulness", "key": -1}, {"text": "Work hard.", "domain": "Conscientiousness", "facet": "Achievement-Striving", "key": 1}, {"text": "Set high standards for myself and others.", "domain": "Conscientiousness", "facet": "Achievement-Striving", "key": 1}, {"text": "Carry out my plans.", "domain": "Conscientiousness", "facet": "Self-Discipline", "key": 1}, {"text": "Have difficulty starting tasks.", "domain": "Conscientiousness", "facet": "Self-Discipline", "key": -1}, {"text": "Make rash decisions.", "domain": "Conscientiousness", "facet": "Cautiousness", "key": -1}, {"text": "Act without thinking.", "domain": "Conscientiousness", "facet": "Cautiousness", "key": -1}], "hexaco": [{"text": "I tell other people what they want to hear so that they will do what I want them to do.", "domain": "Honesty-Humility", "facet": "Sincerity", "key": -1}, {"text": "I put on a show to impress people.", "domain": "Honesty-Humility", "facet": "Sincerity", "key": -1}, {"text": "I switch my loyalties when I feel like it.", "domain": "Honesty-Humility", "facet": "Sincerity", "key": -1}, {"text": "I play a role in order to impress people.", "domain": "Honesty-Humility", "facet": "Sincerity", "key": -1}, {"text": "I would never take things that aren't mine.", "domain": "Honesty-Humility", "facet": "Fairness", "key": 1}, {"text": "I would feel very badly for a long time if I were to steal from someone.", "domain": "Honesty-Humility", "facet": "Fairness", "key": 1}, {"text": "I cheat to get ahead.", "domain": "Honesty-Humility", "facet": "Fairness", "key": -1}, {"text": "I would not regret my behavior if I were to take advantage of someone impulsively.", "domain": "Honesty-Humility", "facet": "Fairness", "key": -1}, {"text": "I love luxury.", "domain": "Honesty-Humility", "facet": "Greed Avoidance", "key": -1}, {"text": "I have a strong need for power.", "domain": "Honesty-Humility", "facet": "Greed Avoidance", "key": -1}, {"text": "I seek status.", "domain": "Honesty-Humility", "facet": "Greed Avoidance", "key": -1}, {"text": "I am mainly interested in money.", "domain": "Honesty-Humility", "facet": "Greed Avoidance", "key": -1}, {"text": "I don't think that I'm better than other people.", "domain": "Honesty-Humility", "facet": "Modesty", "key": 1}, {"text": "I consider myself an average person.", "domain": "Honesty-Humility", "facet": "Modesty", "key": 1}, {"text": "I believe that I am better than others.", "domain": "Honesty-Humility", "facet": "Modesty", "key": -1}, {"text": "I like to attract attention.", "domain": "Honesty-Humility", "facet": "Modesty", "key": -1}, {"text": "I am a physical coward.", "domain": "Emotionality", "facet": "Fearfulness", "key": 1}, {"text": "I begin to panic when there is danger.", "domain": "Emotionality", "facet": "Fearfulness", "key": 1}, {"text": "I face danger confidently.", "domain": "Emotionality", "facet": "Fearfulness", "key": -1}, {"text": "I love dangerous situations.", "domain": "Emotionality", "facet": "Fearfulness", "key": -1}, {"text": "I worry about things.", "domain": "Emotionality", "facet": "Anxiety", "key": 1}, {"text": "I get stressed out easily.", "domain": "Emotionality", "facet": "Anxiety", "key": 1}, {"text": "I panic easily.", "domain": "Emotionality", "facet": "Anxiety", "key": 1}, {"text": "I rarely worry.", "domain": "Emotionality", "facet": "Anxiety", "key": -1}, {"text": "I need reassurance.", "domain": "Emotionality", "facet": "Dependence", "key": 1}, {"text": "I need the approval of others.", "domain": "Emotionality", "facet": "Dependence", "key": 1}, {"text": "I often need help.", "domain": "Emotionality", "facet": "Dependence", "key": 1}, {"text": "I show my sadness.", "domain": "Emotionality", "facet": "Dependence", "key": 1}, {"text": "I immediately feel sad when hearing of an unhappy event.", "domain": "Emotionality", "facet": "Sentimentality", "key": 1}, {"text": "I cry during movies.", "domain": "Emotionality", "facet": "Sentimentality", "key": 1}, {"text": "I am sensitive to the needs of others.", "domain": "Emotionality", "facet": "Sentimentality", "key": 1}, {"text": "I don't understand people who get emotional.", "domain": "Emotionality", "facet": "Sentimentality", "key": -1}, {"text": "I talk a lot.", "domain": "Extraversion", "facet": "Expressiveness", "key": 1}, {"text": "I am the life of the party.", "domain": "Extraversion", "facet": "Expressiveness", "key": 1}, {"text": "I say little.", "domain": "Extraversion", "facet": "Expressiveness", "key": -1}, {"text": "I speak softly.", "domain": "Extraversion", "facet": "Expressiveness", "key": -1}, {"text": "I am good at making impromptu speeches.", "domain": "Extraversion", "facet": "Social Boldness", "key": 1}, {"text": "I don't mind being the center of attention.", "domain": "Extraversion", "facet": "Social Boldness", "key": 1}, {"text": "I keep in the background.", "domain": "Extraversion", "facet": "Social Boldness", "key": -1}, {"text": "I find it difficult to approach others.", "domain": "Extraversion", "facet": "Social Boldness", "key": -1}, {"text": "I love to chat.", "domain": "Extraversion", "facet": "Sociability", "key": 1}, {"text": "I make friends easily.", "domain": "Extraversion", "facet": "Sociability", "key": 1}, {"text": "I seem to derive less enjoyment from interacting with people than others do.", "domain": "Extraversion", "facet": "Sociability", "key": -1}, {"text": "I rarely enjoy being with people.", "domain": "Extraversion", "facet": "Sociability", "key": -1}, {"text": "I am usually active and full of energy.", "domain": "Extraversion", "facet": "Liveliness", "key": 1}, {"text": "I feel healthy and vibrant most of the time.", "domain": "Extraversion", "facet": "Liveliness", "key": 1}, {"text": "I have a lot of fun.", "domain": "Extraversion", "facet": "Liveliness", "key": 1}, {"text": "I tire out quickly.", "domain": "Extraversion", "facet": "Liveliness", "key": -1}, {"text": "I am inclined to forgive others.", "domain": "Agreeableness", "facet": "Forgiveness", "key": 1}, {"text": "I find it hard to forgive others.", "domain": "Agreeableness", "facet": "Forgiveness", "key": -1}, {"text": "I get back at people who insult me.", "domain": "Agreeableness", "facet": "Forgiveness", "key": -1}, {"text": "I distrust people.", "domain": "Agreeableness", "facet": "Forgiveness", "key": -1}, {"text": "I accept people as they are.", "domain": "Agreeableness", "facet": "Gentleness", "key": 1}, {"text": "I become frustrated and angry with people when they don't live up to my expectations.", "domain": "Agreeableness", "facet": "Gentleness", "key": -1}, {"text": "I speak ill of others.", "domain": "Agreeableness", "facet": "Gentleness", "key": -1}, {"text": "I criticize others' shortcomings.", "domain": "Agreeableness", "facet": "Gentleness", "key": -1}, {"text": "I am annoyed by others' mistakes.", "domain": "Agreeableness", "facet": "Flexibility", "key": -1}, {"text": "I can't stand being contradicted.", "domain": "Agreeableness", "facet": "Flexibility", "key": -1}, {"text": "I am hard to satisfy.", "domain": "Agreeableness", "facet": "Flexibility", "key": -1}, {"text": "I am hard to reason with.", "domain": "Agreeableness", "facet": "Flexibility", "key": -1}, {"text": "I rarely get irritated.", "domain": "Agreeableness", "facet": "Patience", "key": 1}, {"text": "I seldom get mad.", "domain": "Agreeableness", "facet": "Patience", "key": 1}, {"text": "I am easily annoyed.", "domain": "Agreeableness", "facet": "Patience", "key": -1}, {"text": "I get angry easily.", "domain": "Agreeableness", "facet": "Patience", "key": -1}, {"text": "I keep things tidy.", "domain": "Conscientiousness", "facet": "Organization", "key": 1}, {"text": "I like order.", "domain": "Conscientiousness", "facet": "Organization", "key": 1}, {"text": "I leave a mess in my room.", "domain": "Conscientiousness", "facet": "Organization", "key": -1}, {"text": "I often forget to put things back in their proper place.", "domain": "Conscientiousness", "facet": "Organization", "key": -1}, {"text": "I push myself very hard to succeed.", "domain": "Conscientiousness", "facet": "Diligence", "key": 1}, {"text": "I work hard.", "domain": "Conscientiousness", "facet": "Diligence", "key": 1}, {"text": "I do too little work.", "domain": "Conscientiousness", "facet": "Diligence", "key": -1}, {"text": "I quickly lose interest in the tasks I start.", "domain": "Conscientiousness", "facet": "Diligence", "key": -1}, {"text": "I pay attention to details.", "domain": "Conscientiousness", "facet": "Perfectionism", "key": 1}, {"text": "I continue until everything is perfect.", "domain": "Conscientiousness", "facet": "Perfectionism", "key": 1}, {"text": "I want every detail taken care of.", "domain": "Conscientiousness", "facet": "Perfectionism", "key": 1}, {"text": "I dislike imperfect work.", "domain": "Conscientiousness", "facet": "Perfectionism", "key": 1}, {"text": "I make plans and stick to them.", "domain": "Conscientiousness", "facet": "Prudence", "key": 1}, {"text": "I do things without thinking of the consequences.", "domain": "Conscientiousness", "facet": "Prudence", "key": -1}, {"text": "I make rash decisions.", "domain": "Conscientiousness", "facet": "Prudence", "key": -1}, {"text": "I make careless mistakes.", "domain": "Conscientiousness", "facet": "Prudence", "key": -1}, {"text": "I believe in the importance of art.", "domain": "Openness", "facet": "Aesthetic Appreciation", "key": 1}, {"text": "I get deeply immersed in music.", "domain": "Openness", "facet": "Aesthetic Appreciation", "key": 1}, {"text": "I seldom notice the emotional aspects of paintings and pictures.", "domain": "Openness", "facet": "Aesthetic Appreciation", "key": -1}, {"text": "I do not like poetry.", "domain": "Openness", "facet": "Aesthetic Appreciation", "key": -1}, {"text": "I enjoy intellectual games.", "domain": "Openness", "facet": "Inquisitiveness", "key": 1}, {"text": "I find political discussions interesting.", "domain": "Openness", "facet": "Inquisitiveness", "key": 1}, {"text": "I have a rich vocabulary.", "domain": "Openness", "facet": "Inquisitiveness", "key": 1}, {"text": "I avoid difficult reading material.", "domain": "Openness", "facet": "Inquisitiveness", "key": -1}, {"text": "I come up with something new.", "domain": "Openness", "facet": "Creativity", "key": 1}, {"text": "I am full of ideas.", "domain": "Openness", "facet": "Creativity", "key": 1}, {"text": "I have excellent ideas.", "domain": "Openness", "facet": "Creativity", "key": 1}, {"text": "I have difficulty imagining things.", "domain": "Openness", "facet": "Creativity", "key": -1}, {"text": "I do things that others find strange.", "domain": "Openness", "facet": "Unconventionality", "key": 1}, {"text": "I swim against the current.", "domain": "Openness", "facet": "Unconventionality", "key": 1}, {"text": "I like to be viewed as proper and conventional.", "domain": "Openness", "facet": "Unconventionality", "key": -1}, {"text": "I like to be thought of as a normal kind of person.", "domain": "Openness", "facet": "Unconventionality", "key": -1}], "archetypes": [{"text": "I instinctively look for what could go right, even when circumstances are difficult.", "domain": "Idealist", "facet": "Idealist", "key": 1}, {"text": "I prepare for setbacks because I assume life will sometimes be unfair or difficult.", "domain": "Realist", "facet": "Realist", "key": 1}, {"text": "I become energized when there is a difficult challenge to overcome.", "domain": "Warrior", "facet": "Warrior", "key": 1}, {"text": "I feel responsible for helping when someone genuinely needs support.", "domain": "Caregiver", "facet": "Caregiver", "key": 1}, {"text": "I need freedom to explore options rather than feel trapped by one path.", "domain": "Seeker", "facet": "Seeker", "key": 1}, {"text": "Deep connection with people is one of the strongest sources of meaning in my life.", "domain": "Lover", "facet": "Lover", "key": 1}, {"text": "I quickly notice systems, habits, or rules that need to be broken or replaced.", "domain": "Revolutionary", "facet": "Revolutionary", "key": 1}, {"text": "I regularly imagine ways to make something that does not yet exist.", "domain": "Creator", "facet": "Creator", "key": 1}, {"text": "I would rather understand why something is true than simply be told that it is.", "domain": "Sage", "facet": "Sage", "key": 1}, {"text": "I use humor to make difficult situations easier to handle.", "domain": "Jester", "facet": "Jester", "key": 1}, {"text": "I am fascinated by transformations in which a small shift changes an entire situation.", "domain": "Magician", "facet": "Magician", "key": 1}, {"text": "I naturally take responsibility when a group lacks direction.", "domain": "Ruler", "facet": "Ruler", "key": 1}, {"text": "I am motivated by hope, possibility, and the belief that life can improve.", "domain": "Idealist", "facet": "Idealist", "key": 1}, {"text": "I value practical coping skills more than comforting illusions.", "domain": "Realist", "facet": "Realist", "key": 1}, {"text": "I am willing to compete hard when something important is at stake.", "domain": "Warrior", "facet": "Warrior", "key": 1}, {"text": "I notice other people's needs even when they do not state them directly.", "domain": "Caregiver", "facet": "Caregiver", "key": 1}, {"text": "I am strongly drawn to new experiences, places, ideas, or ways of living.", "domain": "Seeker", "facet": "Seeker", "key": 1}, {"text": "I care about creating warmth, beauty, closeness, or intimacy around me.", "domain": "Lover", "facet": "Lover", "key": 1}, {"text": "I am willing to reject an accepted way of doing things when I believe it is harmful.", "domain": "Revolutionary", "facet": "Revolutionary", "key": 1}, {"text": "I feel a strong need to express ideas through building, designing, writing, or inventing.", "domain": "Creator", "facet": "Creator", "key": 1}, {"text": "I naturally investigate claims before accepting them.", "domain": "Sage", "facet": "Sage", "key": 1}, {"text": "I value play, spontaneity, and enjoyment as important parts of a good life.", "domain": "Jester", "facet": "Jester", "key": 1}, {"text": "I naturally look for hidden patterns that explain why events unfold as they do.", "domain": "Magician", "facet": "Magician", "key": 1}, {"text": "I care about creating order, standards, and structures that allow things to work well.", "domain": "Ruler", "facet": "Ruler", "key": 1}, {"text": "I prefer to approach people with trust unless I have a reason not to.", "domain": "Idealist", "facet": "Idealist", "key": 1}, {"text": "I feel connected to ordinary people and everyday struggles.", "domain": "Realist", "facet": "Realist", "key": 1}, {"text": "I naturally defend myself or others when boundaries are crossed.", "domain": "Warrior", "facet": "Warrior", "key": 1}, {"text": "I am willing to give time or effort to protect someone more vulnerable.", "domain": "Caregiver", "facet": "Caregiver", "key": 1}, {"text": "I learn about myself by moving beyond what is familiar.", "domain": "Seeker", "facet": "Seeker", "key": 1}, {"text": "I am highly attentive to the quality of my important relationships.", "domain": "Lover", "facet": "Lover", "key": 1}, {"text": "I can feel energized by disruption when disruption is necessary for change.", "domain": "Revolutionary", "facet": "Revolutionary", "key": 1}, {"text": "I am dissatisfied when I can see a better form but cannot create it.", "domain": "Creator", "facet": "Creator", "key": 1}, {"text": "I enjoy building explanations that connect facts into a coherent model.", "domain": "Sage", "facet": "Sage", "key": 1}, {"text": "I often notice the absurd or funny side of serious situations.", "domain": "Jester", "facet": "Jester", "key": 1}, {"text": "I am drawn to helping people or systems move from one state into a better one.", "domain": "Magician", "facet": "Magician", "key": 1}, {"text": "I am comfortable making decisions that affect a larger system or group.", "domain": "Ruler", "facet": "Ruler", "key": 1}, {"text": "I feel most like myself when I can act from optimism rather than cynicism.", "domain": "Idealist", "facet": "Idealist", "key": 1}, {"text": "I tend to notice risks and limitations before I commit to a plan.", "domain": "Realist", "facet": "Realist", "key": 1}, {"text": "I respect discipline, courage, and persistence under pressure.", "domain": "Warrior", "facet": "Warrior", "key": 1}, {"text": "I find meaning in nurturing, mentoring, comforting, or serving others.", "domain": "Caregiver", "facet": "Caregiver", "key": 1}, {"text": "I become restless when life feels overly predictable.", "domain": "Seeker", "facet": "Seeker", "key": 1}, {"text": "I feel most alive when I am fully engaged with someone or something I love.", "domain": "Lover", "facet": "Lover", "key": 1}, {"text": "I would rather challenge a failing system than adapt myself to it indefinitely.", "domain": "Revolutionary", "facet": "Revolutionary", "key": 1}, {"text": "I enjoy turning an abstract vision into something concrete.", "domain": "Creator", "facet": "Creator", "key": 1}, {"text": "I value evidence and sound reasoning even when they challenge what I wanted to believe.", "domain": "Sage", "facet": "Sage", "key": 1}, {"text": "I enjoy helping other people loosen up and enjoy the present moment.", "domain": "Jester", "facet": "Jester", "key": 1}, {"text": "I often think about how perception, meaning, or framing can change outcomes.", "domain": "Magician", "facet": "Magician", "key": 1}, {"text": "I tend to think about resources, roles, accountability, and long-term stability.", "domain": "Ruler", "facet": "Ruler", "key": 1}, {"text": "I am drawn to simple, clear values that help me distinguish what feels right.", "domain": "Idealist", "facet": "Idealist", "key": 1}, {"text": "I respect people who endure hardship without pretending everything is fine.", "domain": "Realist", "facet": "Realist", "key": 1}, {"text": "I would rather confront a serious problem than avoid it.", "domain": "Warrior", "facet": "Warrior", "key": 1}, {"text": "I often think about how my choices will affect the people around me.", "domain": "Caregiver", "facet": "Caregiver", "key": 1}, {"text": "I value independence even when it means leaving comfort behind.", "domain": "Seeker", "facet": "Seeker", "key": 1}, {"text": "I value loyalty and emotional presence in close relationships.", "domain": "Lover", "facet": "Lover", "key": 1}, {"text": "I am comfortable being the person who says that something must end.", "domain": "Revolutionary", "facet": "Revolutionary", "key": 1}, {"text": "Originality matters to me more than simply following a proven template.", "domain": "Creator", "facet": "Creator", "key": 1}, {"text": "I often step back from emotion so I can analyze a situation more clearly.", "domain": "Sage", "facet": "Sage", "key": 1}, {"text": "I resist environments that become unnecessarily solemn or rigid.", "domain": "Jester", "facet": "Jester", "key": 1}, {"text": "I enjoy bringing together ideas that initially seem unrelated.", "domain": "Magician", "facet": "Magician", "key": 1}, {"text": "I prefer competent leadership over ambiguity about who is responsible.", "domain": "Ruler", "facet": "Ruler", "key": 1}, {"text": "I often encourage others by reminding them that better outcomes are possible.", "domain": "Idealist", "facet": "Idealist", "key": 1}, {"text": "I prefer grounded expectations over idealized promises.", "domain": "Realist", "facet": "Realist", "key": 1}, {"text": "I often measure progress by what I have overcome or accomplished.", "domain": "Warrior", "facet": "Warrior", "key": 1}, {"text": "I can put my own preferences aside when another person's wellbeing truly matters.", "domain": "Caregiver", "facet": "Caregiver", "key": 1}, {"text": "I would rather discover my own path than simply inherit one from others.", "domain": "Seeker", "facet": "Seeker", "key": 1}, {"text": "I am willing to invest substantial effort in preserving meaningful bonds.", "domain": "Lover", "facet": "Lover", "key": 1}, {"text": "I see destruction of obsolete structures as potentially necessary for renewal.", "domain": "Revolutionary", "facet": "Revolutionary", "key": 1}, {"text": "I often think in terms of possibilities, designs, and things that could be made.", "domain": "Creator", "facet": "Creator", "key": 1}, {"text": "I am strongly motivated by learning, understanding, and discovering what is true.", "domain": "Sage", "facet": "Sage", "key": 1}, {"text": "I can use irreverence or playfulness to expose what others are taking too seriously.", "domain": "Jester", "facet": "Jester", "key": 1}, {"text": "I am motivated by the possibility of turning insight into meaningful transformation.", "domain": "Magician", "facet": "Magician", "key": 1}, {"text": "I feel responsible for maintaining quality and order when I am in charge.", "domain": "Ruler", "facet": "Ruler", "key": 1}]};
+const META = {
+ big5:{title:"Big Five",subtitle:"IPIP-NEO-60 · 60 items · five domains + 30 rough facet scores",scale:["Very inaccurate","Moderately inaccurate","Neutral","Moderately accurate","Very accurate"],note:"Public-domain IPIP-NEO-60 representation. Facet scores use only two items each, so treat facets as rough signals."},
+ hexaco:{title:"HEXACO",subtitle:"96-item IPIP HEXACO · six domains + 24 facets",scale:["Very inaccurate","Moderately inaccurate","Neutral","Moderately accurate","Very accurate"],note:"Public-domain IPIP-based HEXACO representation. Scores are scale positions, not population percentiles."},
+ archetypes:{title:"Archetypes",subtitle:"Pearson 12-Archetype framework · 72 reflection items",scale:["Strongly disagree","Disagree","Neutral","Agree","Strongly agree"],note:"Uses Pearson's established 12-archetype framework with original reflection items. It is not the proprietary PMAI questionnaire."}
+};
+const state={};
+for(const id of Object.keys(DATA)){
+ const saved=JSON.parse(localStorage.getItem("personality-"+id)||"null");
+ state[id]=saved && saved.answers ? saved : {index:0,answers:{},done:false};
+}
+function save(id){localStorage.setItem("personality-"+id,JSON.stringify(state[id]));}
+function band(p){return p<20?"Very low":p<40?"Low":p<60?"Moderate":p<80?"High":"Very high";}
+function scoreItem(v,key){return key===1?v:6-v;}
+function scoreTest(id){
+ const items=DATA[id], ans=state[id].answers, groups={};
+ for(let i=0;i<items.length;i++){
+  const it=items[i], v=ans[i]; if(!v) continue;
+  const s=scoreItem(v,it.key);
+  if(!groups[it.domain]) groups[it.domain]={vals:[],facets:{}};
+  groups[it.domain].vals.push(s);
+  if(!groups[it.domain].facets[it.facet])groups[it.domain].facets[it.facet]=[];
+  groups[it.domain].facets[it.facet].push(s);
+ }
+ const out={};
+ for(const [name,g] of Object.entries(groups)){
+  const avg=g.vals.reduce((a,b)=>a+b,0)/g.vals.length;
+  const pct=(avg-1)/4*100;
+  const facets={};
+  for(const [f,vs] of Object.entries(g.facets)){
+   const fa=vs.reduce((a,b)=>a+b,0)/vs.length; facets[f]=(fa-1)/4*100;
+  }
+  out[name]={pct,facets};
+ }
+ return out;
+}
+function renderPanel(id){
+ const meta=META[id], st=state[id], items=DATA[id];
+ const answered=Object.keys(st.answers).length, pct=Math.round(answered/items.length*100);
+ return `<section class="panel ${id==="big5"?"active":""}" id="panel-${id}">
+  <div class="test-head"><div><div class="test-title">${meta.title}</div><div class="test-note">${meta.subtitle}<br>${meta.note}</div></div><div class="test-note answer-count">${answered} answered</div></div>
+  <div class="progress"><span style="width:${pct}%"></span></div>
+  <div class="quiz" ${st.done?"style='display:none'":""}></div>
+  <div class="results ${st.done?"show":""}"></div>
+ </section>`;
+}
+document.getElementById("panels").innerHTML=Object.keys(DATA).map(renderPanel).join("");
+function renderQuestion(id){
+ const st=state[id], items=DATA[id], meta=META[id], idx=Math.min(st.index,items.length-1), it=items[idx], selected=st.answers[idx];
+ const q=document.querySelector(`#panel-${id} .quiz`);
+ const options=meta.scale.map((label,i)=>`<button class="option ${selected===i+1?"selected":""}" data-v="${i+1}"><span class="dot"></span><span>${label}</span></button>`).join("");
+ q.innerHTML=`<div class="card"><div class="card-top"><div class="counter">${idx+1} of ${items.length}</div></div>
+ <p class="question">${it.text}</p><div class="options">${options}</div>
+ <div class="nav"><button class="btn back" ${idx===0?"disabled":""}>Back</button><button class="btn primary next" ${selected?"":"disabled"}>${idx===items.length-1?"See results":"Next"}</button></div></div>`;
+ q.querySelectorAll(".option").forEach(b=>b.onclick=()=>{
+   st.answers[idx]=Number(b.dataset.v); save(id); updateHeader(id); renderQuestion(id);
+ });
+ q.querySelector(".back").onclick=()=>{if(idx>0){st.index=idx-1;save(id);renderQuestion(id)}};
+ q.querySelector(".next").onclick=()=>{
+   if(!st.answers[idx])return;
+   if(idx===items.length-1){
+     if(Object.keys(st.answers).length!==items.length){alert("Please answer every item before scoring.");return}
+     st.done=true;save(id);renderResults(id);
+   }else{st.index=idx+1;save(id);renderQuestion(id)}
+ };
+}
+function updateHeader(id){
+ const st=state[id], items=DATA[id], answered=Object.keys(st.answers).length, pct=Math.round(answered/items.length*100);
+ const panel=document.querySelector(`#panel-${id}`); panel.querySelector(".answer-count").textContent=`${answered} answered`; panel.querySelector(".progress span").style.width=pct+"%";
+}
+function renderResults(id){
+ const st=state[id], panel=document.querySelector(`#panel-${id}`), r=scoreTest(id);
+ panel.querySelector(".quiz").style.display="none";
+ const box=panel.querySelector(".results"); box.classList.add("show");
+ let body="";
+ if(id==="archetypes"){
+   const sorted=Object.entries(r).sort((a,b)=>b[1].pct-a[1].pct);
+   const total=sorted.reduce((s,[,v])=>s+v.pct,0)||1;
+   const top=sorted.slice(0,3);
+   body=`<div class="top3">${top.map(([n,v],i)=>`<div class="top-card"><div><div class="rank">#${i+1}</div><div class="top-name">${n}</div></div><div><div class="blend">${Math.round(v.pct)} / 100</div><div class="band">${Math.round(v.pct/total*100)}% of total archetype signal</div></div></div>`).join("")}</div>`;
+ }
+ body+=`<div class="score-grid">${Object.entries(r).sort((a,b)=>b[1].pct-a[1].pct).map(([n,v])=>`<div class="score-card"><div class="score-row"><div class="score-name">${n}</div><div class="score-val">${Math.round(v.pct)}</div></div><div class="bar"><span style="width:${v.pct}%"></span></div><div class="band">${band(v.pct)}</div>${id!=="archetypes"?`<div class="facets">${Object.entries(v.facets).map(([f,p])=>`<div class="facet"><span>${f}</span><strong>${Math.round(p)}</strong></div>`).join("")}</div>`:""}</div>`).join("")}</div>`;
+ box.innerHTML=`<div class="result-title">${META[id].title} results</div><div class="result-sub">0–100 scale position. This is not a population percentile.</div>${body}<div class="actions"><button class="btn retake">Retake this test</button><button class="btn review">Review answers</button></div><div class="footer-note">${META[id].note}</div>`;
+ box.querySelector(".retake").onclick=()=>{if(confirm("Clear this test's saved answers and restart?")){state[id]={index:0,answers:{},done:false};save(id);box.classList.remove("show");panel.querySelector(".quiz").style.display="block";updateHeader(id);renderQuestion(id)}};
+ box.querySelector(".review").onclick=()=>{st.done=false;st.index=0;save(id);box.classList.remove("show");panel.querySelector(".quiz").style.display="block";renderQuestion(id)};
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+ document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===t));
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="panel-"+t.dataset.tab));
+});
+for(const id of Object.keys(DATA)){ if(state[id].done) renderResults(id); else renderQuestion(id); }
+</script>
+</body>
+</html>
